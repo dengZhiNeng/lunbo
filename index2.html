@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            box-sizing: border-box;
+        }
+        .box {
+            width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .slider {
+            height: 500px;
+            position: relative;
+        }
+        .slider li {
+            position: absolute;
+            left: 200px;
+            top: 0;
+        }
+        .slider li img {
+            width: 100%;
+        }
+        .prev,
+        .next {
+            position: absolute;
+            top: 50%;
+            width: 76px;
+            height: 112px;
+            background: url("images/prev.png") no-repeat;
+            margin-top: -50px;
+        }
+        .prev {
+            left: 0;
+        }
+        .next {
+            right: 0;
+            background: url("images/next.png") no-repeat;
+        }
+        .arrow {
+            z-index: 1000;
+            opacity: 0;
+            position: relative;
+            margin-top: -200px;
+        }
+    </style>
+</head>
+<body>
+     <div class="box" id="box">
+         <div class="slider" id="slider">
+             <ul>
+                 <li><a href="#"><img src="images/slidepic1.jpg" alt=""></a></li>
+                 <li><a href="#"><img src="images/slidepic2.jpg" alt=""></a></li>
+                 <li><a href="#"><img src="images/slidepic3.jpg" alt=""></a></li>
+                 <li><a href="#"><img src="images/slidepic4.jpg" alt=""></a></li>
+                 <li><a href="#"><img src="images/slidepic5.jpg" alt=""></a></li>
+             </ul>
+         </div>
+         <div class="arrow" id="arrow">
+             <a href="javascript:;" class="prev"></a>
+             <a href="javascript:;" class="next"></a>
+         </div>
+     </div>
+</body>
+</html>
+<script src="animate.js"></script>
+<script>
+    window.onload = function () {
+        function $(id) {return document.getElementById(id)}
+        var box = $('box');
+        var slider = $('slider');
+        var arrow = $('arrow');
+        var as = arrow.children;
+        var list = slider.getElementsByTagName('li');
+
+        box.onmouseover = function () {
+            animate(arrow , {opacity : 100})
+        };
+        box.onmouseout = function () {
+            animate(arrow , {opacity : 0})
+        };
+        var json = [
+            {   //  1
+                width:400,
+                top:20,
+                left:50,
+                opacity:20,
+                z:2
+            },
+            {  // 2
+                width:600,
+                top:70,
+                left:0,
+                opacity:80,
+                z:3
+            },
+            {   // 3
+                width:800,
+                top:100,
+                left:200,
+                opacity:100,
+                z:4
+            },
+            {  // 4
+                width:600,
+                top:70,
+                left:600,
+                opacity:80,
+                z:3
+            },
+            {   //5
+                width:400,
+                top:20,
+                left:750,
+                opacity:20,
+                z:2
+            }
+        ];
+        for (var k in as) {
+            as[k].onclick = function () {
+                if (this.className == 'prev') {
+                    change(false)
+                } else {
+                    change(true)
+                }
+            }
+        }
+        change();
+        function change(falg) {
+            if (falg) {
+                json.unshift(json.pop());
+            } else {
+                json.push(json.shift());
+            }
+            for (var i = 0 ; i < json.length; i ++) {
+                animate(list[i] , {
+                    width : json[i].width,
+                    top : json[i].top,
+                    left : json[i].left,
+                    opacity : json[i].opacity,
+                    zIndex : json[i].z
+                });
+            }
+        }
+
+    }
+</script>

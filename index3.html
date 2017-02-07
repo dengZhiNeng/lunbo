@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .w-slider {
+            width: 730px;
+            height: 454px;
+            margin: 50px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .slider {
+            width: 730px;
+            height: 454px;
+            position: relative;
+        }
+        .slider-ctrl {
+            text-align: center;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            margin-left: -120px;
+        }
+        .slider-ctrl-span {
+            width: 24px;
+            height: 24px;
+            background: rgba(0,0,0,.5);
+            display: inline-block;
+            margin: 0 10px;
+            line-height: 24px;
+            color: #fff;
+            border-radius: 90px;
+            cursor: pointer;
+        }
+        .slider-ctrl-span.current {
+            background: red;
+        }
+        .slider-ctrl-prev,
+        .slider-ctrl-next {
+            position: absolute;
+            top:50%;
+            width: 36px;
+            height: 36px;
+            font-size: 30px;
+            background: rgba(0,0,0,.54);
+            cursor: pointer;
+            margin-top: -230px;
+            color: #fff;
+            display: none;
+        }
+        .slider-ctrl-prev {
+            left: -244px;
+        }
+        .slider-ctrl-next {
+            right: -221px;   /*// -181px*/
+
+        }
+        .slider-main {
+            width: 1460px;
+            height: 100%;
+        }
+        .slider-main-img {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="w-slider" id="w_slider">
+    <div class="slider" id="slider">
+        <div class="slider-main" id="slider_main">
+            <div class="slider-main-img"><img src="images/11.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/22.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/33.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/44.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/55.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/66.jpg" alt=""></div>
+        </div>
+
+
+
+        <div class="slider-ctrl" id="slider_ctrl">
+            <span class="slider-ctrl-prev">&lt;</span>
+
+            <span class="slider-ctrl-next">&gt;</span>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="animate.js"></script>
+<script>
+    const w_slider = document.getElementById('w_slider');  // 最大的盒子
+    const slider = document.getElementById('slider');  // 主盒子
+    const slider_main = document.getElementById('slider_main');   // 放图片的盒子
+    const slider_ctrl = document.getElementById('slider_ctrl');  // 放span的盒子
+    const img = slider_main.children;   // 所有的图片
+    const spans = slider_ctrl.children;  // 所有的span;
+    const slider_ctrl_prev = document.getElementsByClassName('slider-ctrl-prev')[0];
+    const slider_ctrl_next = document.getElementsByClassName('slider-ctrl-next')[0];
+
+
+    for (let i = 0; i < img.length; i ++) {
+        const span = document.createElement('span');
+        slider_ctrl.insertBefore(span,slider_ctrl.children[1]);
+        span.innerHTML = img.length - i;
+        span.className = 'slider-ctrl-span';
+    }
+    spans[1].className = 'slider-ctrl-span current';
+
+
+    const scrollWidth = w_slider.offsetWidth;
+    for (let i = 1; i < img.length; i ++) {
+        img[i].style.left = scrollWidth + 'px';
+    }
+
+
+    // for in
+    let iNow = 0;
+    for (let k in spans) {
+        spans[k].onclick =  function  () {
+            if (this.className == 'slider-ctrl-prev') {
+                animate(img[iNow] , {left : scrollWidth});
+                -- iNow < 0 ? iNow = img.length - 1 : iNow;
+                img[iNow].style.left = -scrollWidth + 'px';
+                animate(img[iNow], {left : 0});
+                quse();
+
+            } else if (this.className == 'slider-ctrl-next') {
+                aotuPlay();
+
+
+            } else {
+                let that = this.innerHTML - 1;
+                if (that > iNow) {
+                    animate(img[iNow] , {left : -scrollWidth});
+                    img[that].style.left = scrollWidth + 'px';
+                } else if (that < iNow) {
+                    animate(img[iNow] , {left : scrollWidth});
+                    img[that].style.left = -scrollWidth + 'px';
+                }
+                    iNow = that;
+                    animate(img[iNow] , {left : 0});
+                quse();
+
+            }
+        }
+    }
+
+
+    function quse() {
+        for (let i = 1; i < spans.length - 1; i ++) {
+            spans[i].className = 'slider-ctrl-span';
+        }
+        spans[iNow + 1].className = 'slider-ctrl-span current'
+    }
+
+    let timer = null;
+    timer = setInterval(aotuPlay , 1000);
+    function aotuPlay() {
+
+        animate(img[iNow] , {left : -scrollWidth});
+        ++ iNow > img.length - 1 ? iNow = 0 : iNow;
+        img[iNow].style.left = scrollWidth + 'px';
+        animate(img[iNow], {left : 0});
+        quse()
+    }
+    w_slider.onmouseover = function () {
+        clearInterval(timer);
+        slider_ctrl_prev.style.display = 'block';
+        slider_ctrl_next.style.display = 'block';
+
+    };
+
+
+    w_slider.onmouseout = function () {
+        timer = setInterval(aotuPlay , 2000);
+        slider_ctrl_prev.style.display = 'none';
+        slider_ctrl_next.style.display = 'none';
+    }
+</script>
+</body>
+</html>

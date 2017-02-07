@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .w-slider {
+            width: 310px;
+            height: 265px;
+            margin: 100px auto;
+            position: relative;
+            overflow: hidden;
+        }
+        .slider {
+            width: 310px;
+            height: 220px;
+        }
+        .slider-ctrl {
+            text-align: center;
+        }
+        .slider-ctrl-con {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: url("images/icon.png") no-repeat -24px -780px;
+            margin: 10px 8px;
+            cursor: pointer;
+            text-indent: -20em;
+            overflow: hidden;
+        }
+        .slider-ctrl-prev ,
+        .slider-ctrl-next {
+            position: absolute;
+            top: 50%;
+            margin-top: -30px;
+            width: 30px;
+            height: 36px;
+            background: url("images/icon.png") no-repeat 6px 0;
+            cursor: pointer;
+            display: none;
+        }
+        .slider-ctrl-prev {
+            left: 0;
+        }
+        .slider-ctrl-next {
+            right: 0;
+            background-position: -6px -45px;
+        }
+        .slider-main {
+            width: 620px;
+            height: 220px;
+        }
+        .slider-main-img {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        .current {
+            background-position: 0 -760px;
+        }
+    </style>
+</head>
+<body>
+<div class="w-slider" id="w_slider">
+    <div class="slider" id="slider">
+        <div class="slider-main" id="slider_main">
+            <div class="slider-main-img"><img src="images/1.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/2.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/3.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/4.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/5.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/6.jpg" alt=""></div>
+            <div class="slider-main-img"><img src="images/7.jpg" alt=""></div>
+        </div>
+    </div>
+    <div class="slider-ctrl" id="slider_ctrl">
+        <span class="slider-ctrl-prev"></span>
+        <span class="slider-ctrl-next"></span>
+    </div>
+</div>
+
+
+<script src="animate.js"></script>
+<script>
+    const w_slider = document.getElementById('w_slider');  // 最大的盒子
+    const slider = document.getElementById('slider'); // 主盒子
+    const slider_main = document.getElementById('slider_main'); // 图片的盒子
+    const slider_ctrl = document.getElementById('slider_ctrl');  // span的盒子
+    const slider_ctrl_prev = document.getElementsByClassName('slider-ctrl-prev')[0];  // 箭头 &lt
+    const slider_ctrl_next = document.getElementsByClassName('slider-ctrl-next')[0];  // 箭头  &gt
+    const imgs = slider_main.children;
+    const spans = slider_ctrl.children;
+
+    // 操作元素
+    for (let i = 0; i < imgs.length; i ++) {
+        const span = document.createElement('span');  // 动态创建span
+        slider_ctrl.insertBefore(span , slider_ctrl.children[1]); // 插入节点
+        span.innerHTML = imgs.length - i;
+        span.className = 'slider-ctrl-con';
+    }
+    spans[1].className = 'slider-ctrl-con current';
+
+    var offsetWidth = w_slider.offsetWidth;
+    for (let i = 1; i < imgs.length; i ++) {
+        imgs[i].style.left = offsetWidth + 'px';
+    }
+
+    let iNow = 0;
+    for (let j in spans) {
+        spans[j].onclick = function () {
+            if (this.className === 'slider-ctrl-prev') {
+                //alert(1)
+                animate(imgs[iNow] , {left : offsetWidth});
+                -- iNow < 0 ? iNow = imgs.length -1 : iNow;
+                imgs[iNow].style.left = -offsetWidth + 'px';
+                animate(imgs[iNow] , {left : 0})
+                quse()
+            } else if (this.className === 'slider-ctrl-next') {
+                //alert(2)
+                autoPlay();
+            } else {
+                //alert(3)
+                let that = this.innerHTML - 1;
+                if (that > iNow) {
+                    animate(imgs[iNow] , {left : -offsetWidth});
+                    imgs[that].style.left = offsetWidth + 'px';
+                } else if (that < iNow) {
+                    animate(imgs[iNow] , {left : offsetWidth});
+                    imgs[that].style.left = -offsetWidth + 'px';
+                }
+                    iNow = that;
+                    animate(imgs[iNow] , {left : 0});
+                quse()
+
+            }
+        }
+    }
+
+    function quse() {
+        for (let i = 1; i < spans.length - 1; i ++) {
+            spans[i].className = 'slider-ctrl-con';
+        }
+        spans[iNow + 1].className = 'slider-ctrl-con current'
+    }
+
+    let timer = null;
+    timer = setInterval(autoPlay , 1000);
+    function autoPlay() {
+        animate(imgs[iNow] , {left : -offsetWidth});
+        ++ iNow > imgs.length - 1 ? iNow = 0 : iNow;
+        imgs[iNow].style.left = offsetWidth + 'px';
+        animate(imgs[iNow] , {left : 0})
+        quse()
+    }
+
+    w_slider.onmouseover = function () {
+        slider_ctrl_prev.style.display = 'block';
+        slider_ctrl_next.style.display = 'block';
+        clearInterval(timer);
+    }
+
+    w_slider.onmouseout = function () {
+        slider_ctrl_prev.style.display = 'none';
+        slider_ctrl_next.style.display = 'none';
+        timer = setInterval(autoPlay , 2000);
+    }
+</script>
+</body>
+</html>
